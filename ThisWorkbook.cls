@@ -7,8 +7,22 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
-
 Private Sub Workbook_Open()
+
+'Clear BUGFIX Indicator
+ActiveSht = ActiveSheet.Name
+
+If ActiveSht <> "DATA" Then Sheets("DATA").Visible = xlSheetVisible
+    
+    With Sheets("DATA")
+        .Select
+        .Range("T21").ClearContents
+        .Range("T22").ClearContents
+        .Range("T23").ClearContents
+        .Range("T24").ClearContents
+        .Range("T25").ClearContents
+        .Range("T26").ClearContents
+    End With
 
 Admin.HideAllSheets
 

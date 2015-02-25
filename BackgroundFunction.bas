@@ -50,8 +50,8 @@ application.DisplayAlerts = View("Alrt")
 
 Dim j
 
-If IsEmpty(WitchArray) Then Exit Function
-If IsEmpty(strValue) Then Exit Function
+If WitchArray = "" Then GoTo EndFunction
+If strValue = "" Then GoTo EndFunction
 
 10
 Select Case WitchArray
@@ -62,8 +62,8 @@ Case "NotAv"
 Case "VBAExport"
     ArrayVals = Array(".frm", ".bas", ".txt")
 Case Else
-     Error.DebugTekst "No Array selected:" & WitchArray & vbNewLine & "String: " & strValue, SubName
-    Exit Function
+    Error.DebugTekst "No Array selected:" & WitchArray & vbNewLine & "String: " & strValue, SubName
+    GoTo EndFunction
 End Select
 
 20  For j = 0 To UBound(ArrayVals)
@@ -72,6 +72,8 @@ End Select
       Exit Function
     End If
   Next
+  
+EndFunction:
 25  InArray = False
 Exit Function
 
@@ -246,21 +248,7 @@ application.DisplayAlerts = View("Alrt")
 
 Dim InfoBox As Object
 
-
-1 'titel
-If Titel = "" Then _
-    Titel = "Task complete"
-
-2 'Close time in seconds
-If Interval = 0 Then _
-    Interval = 2
-
-3 'Voettekst
-If VoetTekst = "" Then _
-    VoetTekst = "PRESS: 'ctrl+m' FOR THE MENU" & vbNewLine & vbNewLine _
-                & "(Auto close: " & Interval & "sec)."
-
-4 'Body tekst
+1 'Body tekst
 If Tekst = "" Then
     Select Case Taak
         Case "SortInkoper"
@@ -272,6 +260,24 @@ If Tekst = "" Then
     End Select
 End If
 
+4 'plaats de tekst in de debug log
+Error.DebugTekst Tekst:="Tekst: " & Tekst & vbNewLine _
+                        & "Titel: " & Titel & vbNewLine _
+                        & "VoetTekst: ", FunctionName:=SubName
+
+5 'titel
+If Titel = "" Then _
+    Titel = "Task complete"
+    
+6 'Voettekst
+If VoetTekst = "" Then _
+    VoetTekst = "PRESS: 'ctrl+m' FOR THE MENU" & vbNewLine & vbNewLine _
+                & "(Auto close: " & Interval & "sec)."
+
+7 'Close time in seconds
+If Interval = 0 Then _
+    Interval = 2
+    
 10
 Set InfoBox = CreateObject("WScript.Shell")
 

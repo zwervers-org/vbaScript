@@ -38,10 +38,13 @@ Dim versie As String
 
 10    'notice the error in the "Bugfix indicator"
     ActiveSht = ActiveSheet.Name
-    Sheets("DATA").Visible = xlSheetVisible
+    
+    If ActiveSht <> "DATA" Then Sheets("DATA").Visible = xlSheetVisible
+    
     With Sheets("DATA")
         .Select
         versie = .Range("T20").Value
+        Counter = .Range("T21").Value
         If .Range("T21").Value = "" Then
             Counter = 1
             .Range("T21").Value = Counter
@@ -50,13 +53,14 @@ Dim versie As String
             .Range("T24").Value = Err.Number
             .Range("T25").Value = Err.Source
             .Range("T26").Value = Err.Description
-11      ElseIf .Range("T21").Value > 1 Then
-            If SubName = .Range("T22").Value And _
+            Error.DebugTekst "New error in Bugfix indicator"
+            
+11      ElseIf .Range("T21").Value > 0 Then
+            If SubName = "'" & .Range("T22").Value And _
                 Erl = .Range("T23").Value And _
                 Err.Number = .Range("T24").Value And _
                 Err.Source = .Range("T25").Value Then
-                
-                .Range("T21").Value = Counter + 1
+                    .Range("T21").Value = Counter + 1
 12          Else
                 Counter = 1
                 .Range("T21").Value = Counter
@@ -65,11 +69,14 @@ Dim versie As String
                 .Range("T24").Value = Err.Number
                 .Range("T25").Value = Err.Source
                 .Range("T26").Value = Err.Description
+                Error.DebugTekst "Delete previous and add new error in Bugfix indicator"
             End If
         End If
+    Counter = .Range("T21").Value
     End With
+    
 15 'back to the sheet were the error is indicated
-    Sheets("DATA").Visible = xlSheetHidden
+    If ActiveSht <> "DATA" Then Sheets("DATA").Visible = xlSheetHidden
     Sheets(ActiveSht).Select
     
 20  'Send an email to the opporator/bugfix-er

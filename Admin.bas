@@ -124,6 +124,7 @@ Public Sub ExportVisualBasicCode()
                 Set objFolder = fso.GetFolder(newDir)
             Else
                 Set objFolder = fso.CreateFolder(newDir)
+                Error.DebugTekst "Create folder: " & newDir
             End If
         Next
     End If
@@ -147,8 +148,8 @@ Public Sub ExportVisualBasicCode()
         On Error Resume Next
         Err.Clear
         
-        BladCheck = InStr(VBComponent.Name, "Blad")
-        If BladCheck > 0 Then
+        Bladcheck = InStr(VBComponent.Name, "Blad")
+        If Bladcheck > 0 Then
             Error.DebugTekst ("Skiped: " & VBComponent.Name)
             skiped = skiped + 1
             GoTo Volgende
