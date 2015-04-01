@@ -19,7 +19,7 @@ Dim Nm As String
 'Ingevulde informatie bewaren
 'Check on previouse saved data
     Sheets("Certificaten").Select
-    Nm = Range("A1").Value
+    Nm = Format(Range("A1").Value, "mm-dd-yyyy")
 
 If Nm <> "" Then
 
@@ -119,7 +119,7 @@ EndCert = Range("C1000").End(xlUp).Row
 
 Range("A2", "L" & EndCert). _
         ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
-        "J:\Certificaten\Certificaten Aflopend" & Range("A1").Value & ".pdf", Quality:= _
+        "J:\Certificaten\Certificaten Aflopend" & Format(Range("A1").Value, "mm-dd-yyyy") & ".pdf", Quality:= _
         xlQualityStandard, IncludeDocProperties:=True, IgnorePrintAreas:=False, _
         OpenAfterPublish:=False
 Range("A2").Select

@@ -144,7 +144,7 @@ With application.FileDialog(msoFileDialogFilePicker)
     Else
       MsgBox "You canceled the file loading."
       
-      LoadOldData (Range("A1").Value)
+      LoadOldData (Format(Range("A1").Value, "mm-dd-yyyy"))
       GoTo Einde:
     End If
 End With
@@ -213,6 +213,7 @@ Select Case (Ext)
     NewDate = Range("C2").Value
     
     NewDate = Format(NewDate, "mm-dd-yyyy")
+    Error.DebugTekst ("NewDate= " & NewDate)
 
 OpnieuwTxt:
         Einde = Range("A1000").End(xlUp).Row
@@ -299,6 +300,28 @@ OpnieuwXls:
     End Select
 End With
 
+'delete password protection
+Workbooks(NmWb).Activate
+CertBewerkbaar
+
+'Set Copy-range
+With Workbooks(DataWb)
+    .Activate
+    With .Sheets(ActiveSheet.Name)
+        Einde = .Range("A1000").End(xlUp).Row
+    
+        If .Range("A3").Value = "Code" Then
+            Set rng = .Range("A4", "E" & Einde)
+        ElseIf .Range("A2").Value = "Zakenrelaties (Certificaten)" Then
+            Set rng = .Range("A3", "E" & Einde)
+        ElseIf .Range("C2").Value = NewDate Then
+            Set rng = .Range("A3", "E" & Einde)
+        Else
+            Set rng = .Range("A2", "E" & Einde)
+        End If
+    End With
+End With
+
 Select Case DataBV
 Case "NL"
     GoTo CopyNwData:
@@ -317,174 +340,171 @@ End Select
 Exit Function
 
 CopyNwData:
-'delete password protection
-Workbooks(NmWb).Activate
-CertBewerkbaar
 
-'Copy New data
-    Workbooks(DataWb).Activate
-    Einde = Range("A1000").End(xlUp).Row
-    
-    If Range("A3").Value = "Code" Then
-        Set rng = Range("A4", "E" & Einde)
-    ElseIf Range("A2").Value = "Zakenrelaties (Certificaten)" Then
-        Set rng = Range("A3", "E" & Einde)
-    Else
-        Set rng = Range("A2", "E" & Einde)
-    End If
-    
-    rng.Copy
+    With Workbooks(DataWb)
+        .Activate
+        rng.Copy
+    End With
 
 'Paste existing data
-    Workbooks(NmWb).Activate
-    Sheets("Certificaten").Select
-    
-    Range("C2").PasteSpecial xlPasteValues
+    With Workbooks(NmWb)
+        .Activate
+        With .Sheets("Certificaten")
+            .Select
+            .Range("C2").PasteSpecial xlPasteValues
 
-'Past date of new data
-    
-    Range("A1").Value = NewDate
-    Range("A1").Select
-
+        'Past date of new data
+            .Range("A1").Value = NewDate
+            .Range("A1").Select
+        End With
+    End With
 BackgroundFunction.AutoCloseMessage Tekst:="New data loaded. Checked for validity till: " & Range("A1").Value
 
 GoTo SorteerActie
 
 CopyExtrData:
-'delete password protection
-Workbooks(NmWb).Activate
-CertBewerkbaar
-
-'Check date of the files
-Workbooks(NmWb).Activate
-OldDate = Sheets("Certificaten").Range("A1").Value
-
-OldDate = Format(OldDate, "mm-dd-yyyy")
-
-If OldDate = NewDate Then
-
-'Copy extra data
-
-    Workbooks(DataWb).Activate
-    EindeDataWb = Range("A3").End(xlDown).Row
-
-    If Range("A3").Value = "Code" Then
-        Set rng = Range("A3", "E" & Einde)
-    Else
-        Set rng = Range("A2", "E" & Einde)
-    End If
+    'Check date of the files
+    With Workbooks(NmWb)
+        .Activate
+        
+        OldDate = .Sheets("Certificaten").Range("A1").Value
     
-    rng.Copy
-
-'Paste existing data
-    Workbooks(NmWb).Activate
-    Sheets("Certificaten").Select
-    
-With Workbooks(NmWb).Sheets("Certificaten")
-    Dim EntryRng As Range
-    
-    EindeNmWb = Range("C1").End(xlDown).Row + 1
-    
-    Range("C" & EindeNmWb).PasteSpecial xlPasteValues
-    
-    Set EntryRng = Range("C" & EindeNmWb, "C" & Range("C1").End(xlDown).Row)
-    
-'Paste the division code before the pasted enteries
-    For Each rw In EntryRng
-    Range("B" & rw.Row).Value = DataBV
-    Next rw
-    
-    'Sort on Code
-        EindeSort = Range("C1000").End(xlUp).Row
-        Columns("A:P").Select
-        Sheets("Certificaten").Sort.SortFields.Clear
-        Sheets("Certificaten").Sort.SortFields.Add Key:=Range( _
-            "C1", "C" & EindeSort), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
-         xlSortNormal
-    With ActiveWorkbook.Worksheets("Certificaten").Sort
-        .SetRange Range("A1", "P" & EindeSort)
-        .Header = xlYes
-        .MatchCase = False
-        .Orientation = xlTopToBottom
-        .SortMethod = xlPinYin
-        .Apply
+        OldDate = Format(OldDate, "mm-dd-yyyy")
+        Error.DebugTekst ("OldDate= " & OldDate)
     End With
-
-Opnieuw:
-
-'delete password protection
-    Workbooks(NmWb).Activate
-    CertBewerkbaar
     
-    DataRng = Range("C1000").End(xlUp).Row
-    For rij = 1 To DataRng Step 1
-        If Range("B" & rij).Value = DataBV Then
-            If Range("C" & rij).Value = Range("C" & rij - 1).Value Then
-                If Range("E" & rij).Value = Range("E" & rij - 1).Value Then
-                    If Range("F" & rij).Value = Range("F" & rij - 1).Value Then
-                        If Range("G" & rij).Value = Range("G" & rij - 1).Value Then
-                            Range("B" & rij - 1).Value = "+" & DataBV
-                            Rows(rij).Delete (Shift = xlUp)
-                            rij = rij - 2
-                            
-                        Else
-                        Dim Answer As String
-                        Dim MyNote As String
-                        
-                            'Place your text here
-                            MyNote = "For supplier: " & Range("D" & rij).Value & Chr(10) _
-                                        & "Are ` " & Range("G" & rij - 1).Value & " ` and ` " _
-                                        & Range("G" & rij).Value & " ` the same certificates?"
-                        
-                            'Display MessageBox
-                            Answer = MsgBox(MyNote, vbQuestion + vbYesNo, "Dobble certificates?")
-                        
-                            If Answer = vbYes Then
-                                Range("B" & rij - 1).Value = "+" & DataBV
-                                Rows(rij).Delete (Shift = xlUp)
-                                rij = rij - 2
+    If OldDate = NewDate Then
+    
+    'Copy extra data
+    With Workbooks(DataWb)
+        .Activate
+            rng.Copy
+    End With
+    
+    'Paste existing data
+    With Workbooks(NmWb)
+        .Activate
+        With .Sheets("Certificaten")
+            .Select
+            
+            Dim EntryRng As Range
+            
+            EindeNmWb = .Range("C1").End(xlDown).Row + 1
+            
+            .Range("C" & EindeNmWb).PasteSpecial xlPasteValues
+            
+            Set EntryRng = .Range("C" & EindeNmWb, "C" & .Range("C1").End(xlDown).Row)
+            
+            
+        'Paste the division code before the pasted enteries
+            For Each rw In EntryRng
+                .Range("B" & rw.Row).Value = DataBV
+            Next rw
+            
+            'Sort on Code
+            EindeSort = .Range("C1000").End(xlUp).Row
+            .Columns("A:P").Select
+            .Sort.SortFields.Clear
+            .Sort.SortFields.Add Key:=.Range( _
+                "C1", "C" & EindeSort), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
+                xlSortNormal
+            With .Sort
+                .SetRange Range("A1", "P" & EindeSort)
+                .Header = xlYes
+                .MatchCase = False
+                .Orientation = xlTopToBottom
+                .SortMethod = xlPinYin
+                .Apply
+            End With
+        End With
+    End With
+    
+Opnieuw:
+    'delete password protection
+    With Workbooks(NmWb)
+        .Activate
+        CertBewerkbaar
+        With .Sheets("Certificaten")
+            DataRng = .Range("C1000").End(xlUp).Row
+            For rij = 1 To DataRng Step 1
+                If .Range("B" & rij).Value = DataBV Then
+                    If .Range("C" & rij).Value = Range("C" & rij - 1).Value Then
+                        If .Range("E" & rij).Value = Range("E" & rij - 1).Value Then
+                            If .Range("F" & rij).Value = Range("F" & rij - 1).Value Then
+                                If .Range("G" & rij).Value = Range("G" & rij - 1).Value Then
+                                    .Range("B" & rij - 1).Value = "+" & DataBV
+                                    .Rows(rij).Delete (Shift = xlUp)
+                                    rij = rij - 2
+                                    
+                                Else
+                                Dim Answer As String
+                                Dim MyNote As String
+                                
+                                    'Place your text here
+                                    MyNote = "For supplier: " & .Range("D" & rij).Value & Chr(10) _
+                                                & "Are ` " & .Range("G" & rij - 1).Value & " ` and ` " _
+                                                & .Range("G" & rij).Value & " ` the same certificates?"
+                                
+                                    'Display MessageBox
+                                    Answer = MsgBox(MyNote, vbQuestion + vbYesNo, "Dobble certificates?")
+                                
+                                    If Answer = vbYes Then
+                                        .Range("B" & rij - 1).Value = "+" & DataBV
+                                        .Rows(rij).Delete (Shift = xlUp)
+                                        rij = rij - 2
+                                    End If
+                                End If
                             End If
                         End If
                     End If
                 End If
-            End If
-        End If
-Next rij
-    'set password protection
+            Next rij
+    
+            Range("A1").Select
+    
+        End With
+        'set password protection
         CertNietBewerkbaar
-End With
-
-Range("A1").Select
-
-BackgroundFunction.AutoCloseMessage Tekst:="Data extention loaded"
-
-Else
-MsgBox "Can't load data, date from source file and base file are not the same:" & Chr$(10) _
-        & "Basefile date: " & Range("C1").Value & Chr$(10) _
-        & "New Sourcefile date: " & Range("C2").Value
-
-End If
+    End With
+    
+    BackgroundFunction.AutoCloseMessage Tekst:="Data extention: " & DataBV & " loaded"
+    
+    Else
+    MsgBox "Can't load data, date from source file and base file are not the same:" & Chr$(10) _
+            & "Basefile date: " & Range("C1").Value & Chr$(10) _
+            & "New Sourcefile date: " & Range("C2").Value
+    
+    End If
 
 SorteerActie:
 'Sort on Code
-    EindeSort = Range("C1000").End(xlUp).Row
-    Columns("A:P").Select
-    Sheets("Certificaten").Sort.SortFields.Clear
-    Sheets("Certificaten").Sort.SortFields.Add Key:=Range( _
-         "C1", "C" & EindeSort), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
-         xlSortNormal
-    With ActiveWorkbook.Worksheets("Certificaten").Sort
-        .SetRange Range("A1", "P" & EindeSort)
-        .Header = xlYes
-        .MatchCase = False
-        .Orientation = xlTopToBottom
-        .SortMethod = xlPinYin
-        .Apply
+    With Workbooks(NmWb)
+        .Activate
+        With .Sheets("Certificaten")
+            EindeSort = .Range("C1000").End(xlUp).Row
+            Columns("A:P").Select
+            .Sort.SortFields.Clear
+            .Sort.SortFields.Add Key:=.Range( _
+                 "C1", "C" & EindeSort), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
+                 xlSortNormal
+            With .Sort
+                .SetRange Range("A1", "P" & EindeSort)
+                .Header = xlYes
+                .MatchCase = False
+                .Orientation = xlTopToBottom
+                .SortMethod = xlPinYin
+                .Apply
+            End With
+        End With
     End With
 
-Exit Function
-
 Einde:
+With Workbooks(NmWb)
+    .Activate
+    With .Sheets("Certificaten")
+        .Range("A1").Select
+    End With
+End With
 
 Exit Function
 

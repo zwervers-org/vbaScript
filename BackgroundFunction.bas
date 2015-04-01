@@ -95,6 +95,8 @@ End If
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
 
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+
 1 Admin.HideAllSaveSheets
 2 Sheets("Certificaten").Select
 3 ActiveSheet.Unprotect Password:=SetPassword
@@ -103,6 +105,9 @@ application.DisplayAlerts = View("Alrt")
 16 If ActiveSheet.AutoFilterMode = True Then
 
 15 Range("A:Z").AutoFilter
+
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
+
 End If
 
 Exit Function
@@ -128,6 +133,8 @@ application.DisplayAlerts = View("Alrt")
 Dim CriteriaValue As String
 Dim CriteriaSplit As String
 
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+
 CriteriaSplit = "|"
 
 1 Admin.HideAllSheets
@@ -150,6 +157,8 @@ Next rij
 20 ActiveSheet.Protect DrawingObjects:=True, Contents:=True, Scenarios:=True _
         , AllowFormattingColumns:=False, AllowSorting:=True, AllowFiltering:=True, Password:=SetPassword
 21 ActiveSheet.EnableSelection = xlNoRestrictions
+
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 
 Exit Function
 
@@ -180,7 +189,6 @@ Function PrintArray(StrArray As Variant)
   MsgBox txt
 
 End Function
-
 
 Public Function ShowFilter(rng As Range) As String
 
@@ -263,24 +271,26 @@ End If
 4 'plaats de tekst in de debug log
 Error.DebugTekst Tekst:="Tekst: " & Tekst & vbNewLine _
                         & "Titel: " & Titel & vbNewLine _
-                        & "VoetTekst: ", FunctionName:=SubName
+                        & "VoetTekst: ", FunctionName:=SubName, _
+                        AutoText:=True
 
 5 'titel
 If Titel = "" Then _
     Titel = "Task complete"
-    
-6 'Voettekst
+
+6 'Close time in seconds
+If Interval = 0 Then _
+    Interval = 2
+
+7 'Voettekst
 If VoetTekst = "" Then _
     VoetTekst = "PRESS: 'ctrl+m' FOR THE MENU" & vbNewLine & vbNewLine _
                 & "(Auto close: " & Interval & "sec)."
 
-7 'Close time in seconds
-If Interval = 0 Then _
-    Interval = 2
-    
 10
 Set InfoBox = CreateObject("WScript.Shell")
 
+application.StatusBar = Titel & ": " & Tekst
 20
 Select Case InfoBox.Popup(Tekst & vbNewLine & vbNewLine & VoetTekst, Interval, Titel, 0)
     Case 1, -1

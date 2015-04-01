@@ -159,3 +159,11 @@ If Err.Number <> 0 Then
     Resume Next
 
 End Sub
+
+Sub DeleteSheets()
+
+    SelectSheet.ActivateAction.Caption = "Delete sheets"
+    
+    SelectSheet.Show
+
+End Sub

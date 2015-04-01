@@ -89,6 +89,14 @@ End Sub
 
 Public Sub ExportVisualBasicCode()
 
+SubName = "'ExportVisualBasicCode'"
+If View("Errr") = True Then
+    On Error GoTo ErrorText:
+End If
+
+application.ScreenUpdating = View("Updte")
+application.DisplayAlerts = View("Alrt")
+
 ' Excel macro to export all VBA source code in this project to text files for proper source control versioning
 ' Requires enabling the Excel setting in Options/Trust Center/Trust Center Settings/Macro Settings/Trust access to the VBA project object model
     Const Module = 1
@@ -176,9 +184,18 @@ Public Sub ExportVisualBasicCode()
         End If
         
 Volgende:
-        On Error GoTo 0
+        On Error GoTo ErrorText
     Next
     
     application.StatusBar = "Successfully exported: " & CStr(count) & " files | Skiped: " & CStr(skiped) & " files"
-    
+    Error.DebugTekst "Successfully exported: " & CStr(count) & " files | Skiped: " & CStr(skiped) & " files", SubName
+   
+Exit Sub
+
+ErrorText:
+If Err.Number <> 0 Then
+    SeeText (SubName)
+    End If
+    Resume Next
+   
 End Sub

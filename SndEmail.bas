@@ -270,7 +270,7 @@ SelectLanguage:
                     On Error Resume Next
 60                    With OutMail
                         .To = Sheets("EmailSjabloon").Range("B3").Value
-                        .CC = Sheets("EmailSjabloon").Range("B4").Value & Sheets("Aanvragen").Range("K1").Value
+                        .CC = Sheets("EmailSjabloon").Range("B4").Value
                         .BCC = ""
                         
                         .Subject = GetSubject(rw, Clm)

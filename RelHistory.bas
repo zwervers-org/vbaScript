@@ -45,6 +45,8 @@ With Sheets("Certificaten")
     CertNietBewerkbaar
 End With
 
+Error.DebugTekst Tekst:="Search with> code: " & code & " | SearchType: " & SearchType, FunctionName:=SubName
+
 If SearchType <> "Neddox" Then
 'zien of er aliassen zijn opgegeven voor het certificaat
 34    FindString = code
@@ -215,6 +217,8 @@ For i = 1 To Sheets.count
     End Select
 
 PlaceInBuffer:
+    Error.DebugTekst Tekst:="Place search data in buffer", FunctionName:=SubName
+    
             HideOneSheet (Sheets(i).Name)
                 If StrYes = True Then
                     With Sheets("Certificaten")
@@ -334,6 +338,8 @@ Einde = Range("T10000").End(xlUp).Row
 qv = "Quick view data?"
 
 TextBox = False
+
+Error.DebugTekst Tekst:="View history search", FunctionName:=SubName
 
 If Einde >= 2 Then
     If TextBox = False Then
@@ -491,6 +497,8 @@ LoadDate.Show
 
 GotoDate = LoadDate.FindString.Value
 
+Error.DebugTekst Tekst:="Fill data from: " & GotoDate & " > into sheet: " & Format(Range("A1").Value, "mm-dd-yyyy"), FunctionName:=SubName
+
 If IsNull(GotoDate) Then
 BackgroundFunction.AutoCloseMessage Tekst:="The process is canceled.", Titel:="Task is canceled"
 Exit Sub
@@ -570,8 +578,12 @@ Set RngCert = Sheets("Certificaten").Range("C2", "C" & Einde)
 
 Sheets("DATA").Range("X1").Value = "False" 'Let system know this was a automatic function that is loading data
 
+Error.DebugTekst Tekst:="Data filled", FunctionName:=SubName
+
 BackgroundFunction.CertNietBewerkbaar
 End If
+
+BackgroundFunction.AutoCloseMessage Tekst:="Actions form " & GotoDate & " is filled into the active overview."
 Exit Sub
 
 ErrorText:

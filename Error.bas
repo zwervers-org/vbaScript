@@ -133,6 +133,13 @@ End With
             & "<p>Probleem beschrijving: </b>" & "</p><p><b>" _
             & Problem & "</b></p>"
 
+53
+   TempFolder = Environ("Temp")
+   ErrorFile = "ErrorLog" & Format(Now(), "ddmmyy") & ".txt"
+   LogFile = TempFolder & "\" & ErrorFile
+54
+   If Dir(LogFile) = "" Then LogFile = ""
+
 70
 With iMsg
     Set .Configuration = iConf
@@ -142,6 +149,7 @@ With iMsg
     .From = EmailFrom
     .Subject = EmailSubject
     .HTMLBody = BodyText
+    .AddAttachment LogFile
     .Send
 End With
 
@@ -163,6 +171,7 @@ If Counter = 1 Then
         .From = EmailFrom
         .Subject = EmailSubject
         .HTMLBody = BodyText
+        .AddAttachment LogFile
         .Send
     End With
     
@@ -180,11 +189,98 @@ If Err.Number <> 0 Then
     
 End Function
 
-Function DebugTekst(Tekst As String, Optional ByVal FunctionName As String)
+Function DebugTekst(Tekst As String, Optional ByVal FunctionName As String, Optional AutoText As Boolean)
 
-If Not IsEmpty(FunctionName) Then Tekst = Left$(FunctionName & ":" & Space(Padding), Padding) & Tekst
+Dim s As String
+Dim n As Integer
 
-Debug.Print Tekst
+TempFolder = Environ("Temp")
+ErrorFile = "ErrorLog" & Format(Now(), "ddmmyy") & ".txt"
+ErrorLog = TempFolder & "\" & ErrorFile
+
+n = FreeFile()
+If Dir(ErrorLog) <> "" Then
+    Open ErrorLog For Append As #n
+Else
+    Open ErrorLog For Output As #n
+End If
+
+If IsEmpty(AutoText) Or AutoText = False Then _
+    If FunctionName <> "" Then Tekst = FunctionName & ">" & Tekst
+
+Debug.Print "----" & vbNewLine & Tekst ' write to immediate
+Print #n, "----" & vbNewLine & Tekst ' write to file
+
+Close #n
 
 End Function
 
+Function SendErrorLog()
+
+SubName = "'SendErrorLog'"
+If View("Errr") = True Then
+    On Error GoTo ErrorText:
+End If
+
+application.ScreenUpdating = View("Updte")
+application.DisplayAlerts = View("Alrt")
+
+Dim iMsg As Object
+Dim iConf As Object
+
+40
+Set iMsg = CreateObject("CDO.Message")
+Set iConf = CreateObject("CDO.Configuration")
+
+Dim objBP As Object
+
+iConf.Load -1    ' CDO Source Defaults
+Set Flds = iConf.Fields
+With Flds
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") _
+                   = "mail.lieskebethke.nl"
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 587
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "webbeheerder@lieskebethke.nl"
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "9aveMxFY"
+    .Update
+End With
+
+50
+   EmailTo = "anko@zwervers.org"
+   EmailFrom = "noreply@zwervers.org <noreply@zwervers.org>"
+51
+   EmailSubject = "Error log van: " & ThisWorkbook.Name & " > " & FunctionName
+52
+   BodyText = "<font size=10px color=#FF0000>Logbestand van: <b>" & ThisWorkbook.Name & "</b></font></p>"
+   
+53
+   TempFolder = Environ("Temp")
+   ErrorFile = "ErrorLog" & Format(Now(), "ddmmyy") & ".txt"
+   LogFile = TempFolder & "\" & ErrorFile
+54
+   If Dir(LogFile) = "" Then LogFile = ""
+
+70
+With iMsg
+    Set .Configuration = iConf
+    .To = EmailTo
+    .CC = EmailCopy
+    .BCC = EmailBCC
+    .From = EmailFrom
+    .Subject = EmailSubject
+    .HTMLBody = BodyText
+    .AddAttachment LogFile
+    .Send
+End With
+
+Exit Function
+
+ErrorText:
+If Err.Number <> 0 Then
+    SeeText (SubName)
+    End If
+    Resume Next
+
+End Function

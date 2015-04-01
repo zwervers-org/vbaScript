@@ -40,11 +40,89 @@ Call FillActions
 
 End Sub
 
+Private Sub MultiPage1_Change()
+
+Dim RngToetsCombi As Range
+Dim RngCelCombi As Range
+
+1
+'If MultiPage1.Pages("Help").Visible = True Then
+If MultiPage1.SelectedItem.Name = "Help" Then
+
+    'clean lists and declare variables
+    HotKeys1.Clear
+    CelKeys1.Clear
+    regel = 0
+    ActSht = ActiveSheet.Name
+    
+10
+    If ActiveSheet.Name <> "DATA" Then Admin.ShowOneSheet ("DATA")
+20
+    With Sheets("DATA")
+        Set RngToetsCombi = .Range("S37:X" & .Range("S50").End(xlUp).Row)
+        Set RngCelCombi = .Range("S51:X" & .Range("S64").End(xlUp).Row)
+30
+        'fill list Key combinations
+        For Each rw In RngToetsCombi
+            With HotKeys1
+                .ColumnHeads = True
+                .ColumnCount = 2
+                .RowSource = RngToetsCombi.Address
+            End With
+        Next rw
+40
+        'fill list cel actions
+        For Each rw In RngCelCombi
+            With CelKeys1
+                .ColumnHeads = True
+                .ColumnCount = 2
+                .RowSource = RngCelCombi.Address
+            End With
+        Next rw
+    End With
+50
+    If ActSht <> "DATA" Then Admin.ShowOneSheet (ActSht)
+
+End If
+
+End Sub
+
 Sub SearchHist_Click()
 
 Menu.Hide
 
 HistRel.Show
+
+End Sub
+
+Private Sub SynergyDocNr1_Onclick()
+
+Dim IE As Object
+
+' Create InternetExplorer Object
+Set IE = CreateObject("InternetExplorer.Application")
+
+' You can uncoment Next line To see form results
+IE.Visible = False
+
+' Send the form data To URL As POST binary request
+IE.Navigate "http://synergy/docs/DocView.aspx?DocumentID={a1dfb942-2a25-463a-bf7f-5599148ee728}"
+
+application.StatusBar = "Please wait... Explorer is opening"
+
+' Wait while IE loading...
+Do While IE.Busy
+    application.Wait DateAdd("s", 1, Now)
+Loop
+
+application.StatusBar = "Explorer is opened the document"
+ 
+' Show IE
+IE.Visible = True
+
+Set IE = Nothing
+
+application.StatusBar = ""
 
 End Sub
 
@@ -59,14 +137,13 @@ Private Sub UserForm_Initialize()
 Dim i As Integer
 
 With GotoSht
-For i = 1 To Sheets.count
-
-.AddItem Sheets(i).Name
-
-Next i
+    For i = 1 To Sheets.count
+        .AddItem Sheets(i).Name
+    Next i
 End With
 
 End Sub
+
 
 Private Sub SaveData_Click()
 
