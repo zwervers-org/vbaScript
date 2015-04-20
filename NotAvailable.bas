@@ -8,6 +8,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 'gegevens opslaan in tijdelijk blad
 'Sheets.Add
@@ -59,11 +61,15 @@ NotAv.Show
 'laten selecten waarvoor dit geld of vink met alles appart
 
 Sheets("NotAvailable").Visible = xlSheetVeryHidden
+
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Sub
+

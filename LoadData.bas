@@ -8,6 +8,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim FileSlct As String
 Dim fDialog As Office.FileDialog
@@ -150,22 +152,33 @@ With application.FileDialog(msoFileDialogFilePicker)
 End With
 Exit Sub
 
-ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-    GoTo Einde:
-Exit Sub
-
 Einde:
 Workbooks(x).Activate
 If y <> "" Then
-Workbooks(y).Close
+    Workbooks(y).Close
+    
+    RemoveSourceFile = MsgBox("Do you want to remove the sourcefile?", vbYesNo, "Remove source file?")
+    
+    If RemoveSourceFile = vbYes Then
+        SetAttr FileSlct, vbNormal
+        Kill FileSlct
+        Error.DebugTekst Tekst:="Removed source file: " & FileSlct, FunctionName:=SubName
+    End If
 End If
-If Workbooks(x).Sheets("Certificaten").ProtectContents <> True Then
-CertNietBewerkbaar
-End If
+
+If Workbooks(x).Sheets("Certificaten").ProtectContents <> True Then CertNietBewerkbaar
+
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
+
+Exit Sub
+
+ErrorText:
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+GoTo Einde
+    
 End Sub
 
 Function LoadNewData(DataWb As String, DataBV As String, SourceFile As String, Extention As String)
@@ -177,6 +190,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim StrName As String
 Dim rng As Range
@@ -506,13 +521,15 @@ With Workbooks(NmWb)
     End With
 End With
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
 Function LoadOldData(GotoDate As String)
@@ -524,6 +541,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim Sht As Worksheet
 Dim rng As Range
@@ -626,12 +645,13 @@ CopyData:
     
     Sheets(GotoDate).Visible = xlSheetVerryHidden
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function

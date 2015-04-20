@@ -2,13 +2,12 @@ Attribute VB_Name = "SortInkoper"
 Sub InkoperSorteren()
 
 SubName = "'InkoperSorteren'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 1
 CertBewerkbaar
@@ -135,10 +134,13 @@ End If
     'Sheets("SortInk").Select
     'Sheets("Certificaten").Visible = xlSheetVerryHidden
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
+
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Sub

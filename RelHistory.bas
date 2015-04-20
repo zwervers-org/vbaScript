@@ -19,6 +19,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim StrOpm() As String 'string for comments
 Dim StrCert() As String 'string for certificate information
@@ -313,26 +315,26 @@ CertNietBewerkbaar
 
 HistorySearch.Show
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function
 
 Function PublishHistorySearch()
 
 SubName = "'PublishHistorySearch'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
-
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 Einde = Range("T10000").End(xlUp).Row
 
 qv = "Quick view data?"
@@ -409,24 +411,26 @@ Skip:
         HistRel.Show
 End If
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
 Function CloseOverview(txt As String)
 
 SubName = "'CloseOverview'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Select Case txt 'save data?
     Case "No"
@@ -462,24 +466,25 @@ With Sheets("Certificaten")
     End Select
 End With
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function
 
 Sub FillActions()
 SubName = "'FillActions'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim StrOpm() As String
 Dim StrCert() As String
@@ -584,12 +589,15 @@ BackgroundFunction.CertNietBewerkbaar
 End If
 
 BackgroundFunction.AutoCloseMessage Tekst:="Actions form " & GotoDate & " is filled into the active overview."
+
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-    
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Sub
+

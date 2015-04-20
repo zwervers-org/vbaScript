@@ -2,12 +2,12 @@ Attribute VB_Name = "ClearData"
 Sub ClearSheet(Sht As String)
 
 SubName = "'ClearSheet'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 1 If Sht = "Certificaten" Then
 
@@ -58,13 +58,15 @@ application.DisplayAlerts = View("Alrt")
 129    End If
 119 End If
 999 End If
+
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then Error.SeeText (SubName)
+
+Resume Next
 
 End Sub
 
@@ -78,6 +80,8 @@ End If
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim rw As Range
 Dim rng As Range
@@ -150,13 +154,14 @@ CleanAmnt = 0
 'bericht weergeven en automatisch wegklikken
 73  BackgroundFunction.AutoCloseMessage Tekst:="There are " & CleanAmnt & " cleaned, and " & CleanSkp & " skiped."
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub
 
@@ -165,5 +170,58 @@ Sub DeleteSheets()
     SelectSheet.ActivateAction.Caption = "Delete sheets"
     
     SelectSheet.Show
+
+End Sub
+
+Sub ClearRow()
+Attribute ClearRow.VB_ProcData.VB_Invoke_Func = "C\n14"
+
+SubName = "'ClearRow'"
+If View("Errr") = True Then
+    On Error GoTo ErrorText:
+End If
+
+application.ScreenUpdating = View("Updte")
+application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
+
+10
+ContinueMsg = MsgBox("You hid the short-key for row clearing" & vbNewLine _
+                & "Do you whant to continue?" _
+                 , vbOKCancel, "Continue?")
+
+Error.DebugTekst Tekst:="Continue question is: " & ContinueMsg
+
+20
+If ContinueMsg = vbOK Then
+    
+    BackgroundFunction.CertBewerkbaar
+    
+    ThisRow = ActiveCell.Row
+    
+    Range("A" & ThisRow & ":G" & ThisRow).ClearContents
+    
+    Range("L" & ThisRow & ":L" & ThisRow).ClearContents
+    
+    BackgroundFunction.CertNietBewerkbaar
+    
+    ClearData.CleanCert
+    
+25
+ElseIf ContinueMsg = vbNo Then
+    End
+
+End If
+
+100
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
+Exit Sub
+
+ErrorText:
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub

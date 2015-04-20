@@ -9,12 +9,12 @@ End Function
 Function MenuShow()
 
 SubName = "'MenuShow'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 1 If ActiveSheet.Name <> "Certificaten" Then
 
@@ -27,31 +27,36 @@ End If
 
 20 Menu.Show
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
-
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-    
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
 Function InArray(WitchArray, strValue)
 
 SubName = "'InArray'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim j
+Dim FnctionEnd As Boolean
 
 If WitchArray = "" Then GoTo EndFunction
 If strValue = "" Then GoTo EndFunction
+
+Error.DebugTekst Tekst:="Values: " & vbNewLine _
+                    & "->WitchArray:" & WitchArray & vbNewLine _
+                    & "->strValue: " & strValue
 
 10
 Select Case WitchArray
@@ -62,78 +67,76 @@ Case "NotAv"
 Case "VBAExport"
     ArrayVals = Array(".frm", ".bas", ".txt")
 Case Else
-    Error.DebugTekst "No Array selected:" & WitchArray & vbNewLine & "String: " & strValue, SubName
+    Error.DebugTekst "No Array selected"
     GoTo EndFunction
 End Select
 
 20  For j = 0 To UBound(ArrayVals)
 21    If ArrayVals(j) = CStr(strValue) Then
-22      InArray = True
-      Exit Function
+22      FnctionEnd = True
+        GoTo EndFunction
     End If
   Next
   
+'--------End Function
 EndFunction:
-25  InArray = False
+25
+If FnctionEnd <> True Then FnctionEnd = False
+
+Error.DebugTekst Tekst:="Finished > " & FnctionEnd, FunctionName:=SubName
+
+InArray = FnctionEnd
+
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-    
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
 Function CertBewerkbaar()
 
 SubName = "'CertBewerkbaar'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
-
 Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 1 Admin.HideAllSaveSheets
-2 Sheets("Certificaten").Select
+2 If ActiveSheet.Name <> "Certificaten" Then Sheets("Certificaten").Select
 3 ActiveSheet.Unprotect Password:=SetPassword
 4 Columns("D:G").EntireColumn.Hidden = False
 
-16 If ActiveSheet.AutoFilterMode = True Then
+15
+If ActiveSheet.AutoFilterMode = True Then Range("A:Z").AutoFilter
 
-15 Range("A:Z").AutoFilter
-
+'--------End Function
 Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
-
-End If
-
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-    
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
 Function CertNietBewerkbaar()
 
 SubName = "'CertNietBewerkbaar'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim CriteriaValue As String
 Dim CriteriaSplit As String
-
-Error.DebugTekst Tekst:="Start", FunctionName:=SubName
 
 CriteriaSplit = "|"
 
@@ -158,15 +161,14 @@ Next rij
         , AllowFormattingColumns:=False, AllowSorting:=True, AllowFiltering:=True, Password:=SetPassword
 21 ActiveSheet.EnableSelection = xlNoRestrictions
 
+'--------End Function
 Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
-
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function
 
@@ -247,12 +249,12 @@ Function AutoCloseMessage(Optional Titel As String, Optional Taak As String, Opt
                             Optional VoetTekst As String)
 
 SubName = "'AutoCloseMessage'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 Dim InfoBox As Object
 
@@ -297,11 +299,13 @@ Select Case InfoBox.Popup(Tekst & vbNewLine & vbNewLine & VoetTekst, Interval, T
         Exit Function
 End Select
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function

@@ -2,12 +2,12 @@ Attribute VB_Name = "SaveData"
 Sub SaveOldData()
 
 SubName = "'SaveOldData'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 CertBewerkbaar
 
@@ -95,25 +95,25 @@ CopyData:
 
     HideAllSheets
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub
 
 Sub SavePDF()
 
-SubName = "'SavePDF'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 EndCert = Range("C1000").End(xlUp).Row
 
@@ -124,12 +124,13 @@ Range("A2", "L" & EndCert). _
         OpenAfterPublish:=False
 Range("A2").Select
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub

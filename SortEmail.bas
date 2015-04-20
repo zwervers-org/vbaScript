@@ -2,13 +2,12 @@ Attribute VB_Name = "SortEmail"
 Sub SorterenEmail(Data As String)
 
 SubName = "'SorterenEmail'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 CertBewerkbaar
 
@@ -82,17 +81,18 @@ CertBewerkbaar
         
     End If
     
-    Exit Sub
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
+Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub
 
-Function CountUnique(ByVal rng As Range) As Long
+Private Function CountUnique(ByVal rng As Range) As Long
 Dim St As String
     Set rng = Intersect(rng, rng.Parent.UsedRange)
     St = "'" & rng.Parent.Name & "'!" & rng.Address(False, False)

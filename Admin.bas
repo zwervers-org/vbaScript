@@ -90,12 +90,12 @@ End Sub
 Public Sub ExportVisualBasicCode()
 
 SubName = "'ExportVisualBasicCode'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
 
 ' Excel macro to export all VBA source code in this project to text files for proper source control versioning
 ' Requires enabling the Excel setting in Options/Trust Center/Trust Center Settings/Macro Settings/Trust access to the VBA project object model
@@ -190,12 +190,22 @@ Volgende:
     application.StatusBar = "Successfully exported: " & CStr(count) & " files | Skiped: " & CStr(skiped) & " files"
     Error.DebugTekst "Successfully exported: " & CStr(count) & " files | Skiped: " & CStr(skiped) & " files", SubName
    
+'--------End Function
+Error.DebugTekst Tekst:="Start GitHub"
+Dim x As Variant
+Dim ProgPath As String
+
+' Set the Path variable equal to the path of your program's installation
+    ProgPath = "H:\ICT\Portable\Portable\PortableApps\GitPortable\GitPortable.exe"
+
+    x = Shell(ProgPath, vbNormalFocus)
+
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
-   
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Sub

@@ -1,6 +1,14 @@
 Attribute VB_Name = "SndEmail"
 Sub FillSjabloon(Sht As String)
 
+SubName = "'FillSjabloon'"
+If View("Errr") = True Then On Error GoTo ErrorText:
+
+application.ScreenUpdating = View("Updte")
+application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
+
 Dim code As String
 Dim rng As Range
 Dim Eind As Integer
@@ -9,15 +17,6 @@ Dim rw As Range
 Dim FindString As String
 
 CertBewerkbaar
-
-SubName = "'FillSjabloon'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
-
-application.ScreenUpdating = View("Updte")
-application.DisplayAlerts = View("Alrt")
 
 Sheets(Sht).Select
 
@@ -199,17 +198,27 @@ Sheets(Sht).Range("L1").FormulaR1C1 = "=SUM(R[1]C:R[" & EindData - 1 & "]C)"
 
 140 BackgroundFunction.AutoCloseMessage Tekst:=SendedMail & " mails are prepared" & vbNewLine & _
         MailError & " have given a error"
+
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Sub
 
-Function Mail_Range(Sht As String)
+Private Function Mail_Range(Sht As String)
+
+SubName = "'Mail_Range'"
+If View("Errr") = True Then On Error GoTo ErrorText:
+
+application.ScreenUpdating = View("Updte")
+application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
     
     Dim OutApp As Object
     Dim OutMail As Object
@@ -218,16 +227,7 @@ Function Mail_Range(Sht As String)
     Dim rw As Integer
     Dim clmn As Integer
     Dim Clm As Integer
-    
-SubName = "'Mail_Range'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
-
-application.ScreenUpdating = View("Updte")
-application.DisplayAlerts = View("Alrt")
-      
+          
 1    Sheets("EmailSjabloon").Visible = xlSheetVisible
 2    Sheets("EmailSjabloon").Select
     
@@ -312,26 +312,26 @@ SelectLanguage:
     Set OutApp = Nothing
     Sheets(Sht).Range("L1").Value = True
     
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function
 
-Function GetSubject(rw As Integer, Coll As Integer)
+Private Function GetSubject(rw As Integer, Coll As Integer)
 
 SubName = "'GetSubject'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
     
 1 Clm = ColLett(Coll + 1)
 2 Clm2 = ColLett(Coll + 3)
@@ -339,29 +339,31 @@ application.DisplayAlerts = View("Alrt")
 3 GetSubject = ThisWorkbook.Sheets("EmailSjabloon").Range(Clm & rw + 1).Value & " " & _
                 ThisWorkbook.Sheets("EmailSjabloon").Range(Clm2 & rw + 1).Value
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function
 
-Function GetBody(rw As Integer, Coll As Integer)
+Private Function GetBody(rw As Integer, Coll As Integer)
 
-    Dim StrBodyOpen As String 'opening text of the email
-    Dim StrBodyClose As String 'end text of the email
-    Dim rngHtml As Range 'Range for the changing body info (certificates)
-   
 SubName = "'GetBody'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
+
+Dim StrBodyOpen As String 'opening text of the email
+Dim StrBodyClose As String 'end text of the email
+Dim rngHtml As Range 'Range for the changing body info (certificates)
+   
 
 1 Clm = ColLett(Coll)
 2 Clm2 = ColLett(Coll + 2)
@@ -414,31 +416,32 @@ Maken:
     
 40    GetBody = StrBodyOpen & RangetoHTML(rngHtml) & StrBodyClose
     
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
 
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
 
 End Function
 
-Function RangetoHTML(rng As Range)
-
-    Dim fso As Object
-    Dim ts As Object
-    Dim TempFile As String
-    Dim TempWB As Workbook
+Private Function RangetoHTML(rng As Range)
 
 SubName = "'RangeToHtml'"
-If View("Errr") = True Then
-    On Error GoTo ErrorText:
-End If
-
+If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
 application.DisplayAlerts = View("Alrt")
+Error.DebugTekst Tekst:="Start", FunctionName:=SubName
+'--------Start Function
+
+Dim fso As Object
+Dim ts As Object
+Dim TempFile As String
+Dim TempWB As Workbook
+
     
 1    TempFile = Environ$("temp") & "\" & Format(Now, "dd-mm-yy hh-mm-ss") & ".htm"
 
@@ -485,10 +488,13 @@ application.DisplayAlerts = View("Alrt")
     Set fso = Nothing
     Set TempWB = Nothing
 
+'--------End Function
+Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Function
+
 ErrorText:
-If Err.Number <> 0 Then
-    SeeText (SubName)
-    End If
-    Resume Next
+If Err.Number <> 0 Then SeeText (SubName)
+
+Resume Next
+
 End Function

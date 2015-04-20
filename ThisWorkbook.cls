@@ -9,11 +9,19 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
 
+Error.DebugTekst Tekst:="Close Workbook", FunctionName:="Workbook_BeforeClose"
+
 Error.SendErrorLog
+
+SetAttr Error.LogFileName, vbNormal
+
+Kill Error.LogFileName
 
 End Sub
 
 Private Sub Workbook_Open()
+
+Error.DebugTekst Tekst:="Open Workbook", FunctionName:="Workbook_Open"
 
 'Clear BUGFIX Indicator
 ActiveSht = ActiveSheet.Name
@@ -40,7 +48,14 @@ If Target.Cells.count <> 1 Then
     Exit Sub
 ElseIf IsError(Target.Value) Then
     Exit Sub
+ElseIf Target.Value = "" Then
+    Exit Sub
 ElseIf ActiveSheet.Name <> "Certificaten" Then
+
+
+    Error.DebugTekst Tekst:="Active target filled: " & Target.Value & vbNewLine _
+                        & "Sheet: " & ActiveSheet.Name, FunctionName:="Workbook_SheetChange"
+
     waarde = Target.Value
     
     Select Case waarde
@@ -53,12 +68,14 @@ ElseIf ActiveSheet.Name <> "Certificaten" Then
             
             ShowOneSheet ("Certificaten")
     End Select
-End If
 
-If ActiveSheet.Name <> "Certificaten" Then
-    Exit Sub
-Else
+ElseIf ActiveSheet.Name = "Certificaten" Then
+
+    Error.DebugTekst Tekst:="Active target filled: " & Target.Value & vbNewLine _
+                    & "Sheet: " & ActiveSheet.Name, FunctionName:="Workbook_SheetChange"
+                    
     If Target.Value = "d" Then 'Naar data sheet en rij met juiste Neddox-code selecteren
+                    
         Dim Zoekcode As String
         Dim FindZoekcode As Range
         
