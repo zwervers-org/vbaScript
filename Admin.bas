@@ -191,14 +191,20 @@ Volgende:
     Error.DebugTekst "Successfully exported: " & CStr(count) & " files | Skiped: " & CStr(skiped) & " files", SubName
    
 '--------End Function
-Error.DebugTekst Tekst:="Start GitHub"
 Dim x As Variant
 Dim ProgPath As String
 
+Error.DebugTekst Tekst:="Start Textfile"
 ' Set the Path variable equal to the path of your program's installation
+    ProgPath = "notepad H:\ICT\Portable\Portable\PortableApps\GitPortable\App\AddOnline.txt"
+
+    x = Shell(ProgPath, vbNormalFocus)
+
+Error.DebugTekst Tekst:="Start GitHub"
     ProgPath = "H:\ICT\Portable\Portable\PortableApps\GitPortable\GitPortable.exe"
 
     x = Shell(ProgPath, vbNormalFocus)
+    
 
 Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
 Exit Sub

@@ -11,7 +11,7 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
 
 Error.DebugTekst Tekst:="Close Workbook", FunctionName:="Workbook_BeforeClose"
 
-Error.SendErrorLog
+'Error.SendErrorLog
 
 SetAttr Error.LogFileName, vbNormal
 
@@ -44,16 +44,17 @@ End Sub
 
 Private Sub Workbook_SheetChange(ByVal sh As Object, ByVal Target As Range)
 
-If Target.Cells.count <> 1 Then
-    Exit Sub
-ElseIf IsError(Target.Value) Then
-    Exit Sub
-ElseIf Target.Value = "" Then
-    Exit Sub
-ElseIf ActiveSheet.Name <> "Certificaten" Then
+ValueType = TypeName(Target.Value)
 
+If Target.Cells.count <> 1 Then Exit Sub
+If IsError(Target.Value) Then Exit Sub
+If Target.Value = "" Then Exit Sub
 
-    Error.DebugTekst Tekst:="Active target filled: " & Target.Value & vbNewLine _
+'---------
+If ActiveSheet.Name <> "Certificaten" Then
+    If ValueType <> "String" Then Exit Sub
+    
+    'Error.DebugTekst Tekst:="Active target filled: " & Target.Value & vbNewLine _
                         & "Sheet: " & ActiveSheet.Name, FunctionName:="Workbook_SheetChange"
 
     waarde = Target.Value
@@ -112,7 +113,8 @@ ElseIf ActiveSheet.Name = "Certificaten" Then
 
 '----------------
     ElseIf Target.Column = 1 Then 'er wordt een actie ingevoerd
-        If IsNumeric(Target.Value) = False Then Exit Sub
+        If ValueType <> "Double" Then Exit Sub
+        'If IsNumeric(Target.Value) = False Then Exit Sub
                 
         AutoCheck = Sheets("DATA").Range("X1").Value
 

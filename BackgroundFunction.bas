@@ -66,6 +66,8 @@ Case "NotAv"
     ArrayVals = Array("1", "2", "3", "8", "9", "10", "11", "12")
 Case "VBAExport"
     ArrayVals = Array(".frm", ".bas", ".txt")
+Case "HotKey"
+    ArrayVals = Array("b", "d", "m", 3, 4, 5, 11)
 Case Else
     Error.DebugTekst "No Array selected"
     GoTo EndFunction

@@ -6,10 +6,12 @@ ErrorFile = "ErrorLog-CertAfl" & Format(Now(), "ddmmyy") & ".txt"
 LogFileName = TempFolder & "\" & ErrorFile
 
 End Function
+Function SendCDOmail(ByVal eTo As String, ByVal eFrom As String, _
+                        ByVal eSubject As String, ByVal eBody As String, _
+                        Optional ByVal eCopy As String, Optional ByVal eBCC As String, _
+                            Optional ByVal eAttach As String)
 
-Private Function CDOinfo(WhatInfo)
-
-SubName = "'CDOinfo'"
+SubName = "'SendCDOmail'"
 If View("Errr") = True Then On Error GoTo ErrorText:
 
 application.ScreenUpdating = View("Updte")
@@ -17,38 +19,70 @@ application.DisplayAlerts = View("Alrt")
 Error.DebugTekst Tekst:="Start", FunctionName:=SubName
 '--------Start Function
 
-Dim FnctionEnd
+Dim iMsg As Object
+Dim iConf As Object
 
-Select Case WhatInfo
-    Case "sendusing"
-        FnctionEnd = 2
-    Case "smtpserver"
-        'FnctionEnd = "mail.lieskebethke.nl"
-        FnctionEnd = "smtp.gmail.com"
-    Case "smtpserverport"
-        'FnctionEnd = 587
-        FnctionEnd = 465
-    Case "smtpauthenticate"
-        FnctionEnd = 1
-    Case "sendusername"
-        'FnctionEnd = "webbeheerder@lieskebethke.nl"
-        FnctionEnd = "webbeheerder@zwervers.org"
-    Case "sendpassword"
-        'FnctionEnd = "9aveMxFY"
-        FnctionEnd = "Zw.orgwb85"
-'Gmail sender update
-    Case "smtpusessl"
-        FnctionEnd = True
-    Case "smtpconnectiontimeout"
-        FnctionEnd = 60
-    Case Else
-        FnctionEnd = False
-        Debug.Assert FnctionEnd = False
-End Select
+40
+Set iMsg = CreateObject("CDO.Message")
+Set iConf = CreateObject("CDO.Configuration")
+
+If IsEmpty(eCopy) Then eCopy = ""
+If IsEmpty(eBCC) Then eBCC = ""
+If IsEmpty(eAttach) Then eAttach = ""
+
+Error.DebugTekst Tekst:="Input values: " & vbNewLine _
+                    & "-->To: " & eTo & vbNewLine _
+                    & "-->CC: " & eCopy & vbNewLine _
+                    & "-->BCC: " & eBCC & vbNewLine _
+                    & "-->From: " & eFrom & vbNewLine _
+                    & "-->Subject: " & eSubject & vbNewLine _
+                    & "-->Body: " & eBody & vbNewLine _
+                    & "-->Attachment: " & eAttach, _
+                    FunctionName:=SubName
+
+iConf.Load -1    ' CDO Source Defaults
+Set Flds = iConf.Fields
+With Flds
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 2525
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = Fasle
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "mx1.hostfree.nl"
+    .Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = 60
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "webbeheerder@lieskebethke.nl"
+    .Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "9aveMxFY"
+
+    '------Gmail Gegevens
+    '.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 465
+    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = True
+    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "smtp.gmail.com"
+    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = 60
+    '.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "webbeheerder@zwervers.org"
+    '.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Zw.orgwb85"
+    '------Gmail Gegevens
+    
+    .Update
+End With
+
+70
+With iMsg
+    Set .Configuration = iConf
+    .To = eTo
+    .CC = eCopy
+    .BCC = eBCC
+    .From = eFrom
+    .Subject = eSubject
+    .HTMLBody = eBody
+    .AddAttachment eAttach
+    .Send
+End With
+
 
 '--------End Function
 
-Error.DebugTekst Tekst:="Finished > " & WhatInfo & ": " & FnctionEnd, FunctionName:=SubName
+Error.DebugTekst Tekst:="Finished", FunctionName:=SubName
 
 OCDinfo = FnctionEnd
 Exit Function
@@ -58,18 +92,8 @@ If Err.Number <> 0 Then SeeText (SubName)
 
 Resume Next
 
-'--------Script als het niet goed gaat via de functie
-    '.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
-    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
-    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 465
-    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = True
-    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "smtp.gmail.com"
-    '.Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = 60
-    '.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "webbeheerder@zwervers.org"
-    '.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Zw.orgwb85"
-'--------
-
 End Function
+
 
 Function View(ByVal What As String) As Boolean
 
@@ -102,6 +126,7 @@ Dim Msg As String
 Dim Counter As Integer
 Dim versie As String
 
+
 1
     Msg = "Error # " & Str(Err.Number) & Chr(13) _
             & SubName & " genarated a error. Source: " & Err.Source & Chr(13) _
@@ -115,6 +140,7 @@ Dim versie As String
     
     With Sheets("DATA")
         .Select
+        If .Range("T21").Value > 100 Then End
         versie = .Range("T20").Value
         Counter = .Range("T21").Value
         If .Range("T21").Value = "" Then
@@ -189,35 +215,9 @@ application.DisplayAlerts = View("Alrt")
 Error.DebugTekst Tekst:="Start", FunctionName:=SubName
 '--------Start Function
 
-Dim iMsg As Object
-Dim iConf As Object
-
-40
-Set iMsg = CreateObject("CDO.Message")
-Set iConf = CreateObject("CDO.Configuration")
-
-Dim objBP As Object
-
-iConf.Load -1    ' CDO Source Defaults
-Set Flds = iConf.Fields
-With Flds
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = Error.CDOinfo("sendusing")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = Error.CDOinfo("smtpserver")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = Error.CDOinfo("smtpserverport")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = Error.CDOinfo("smtpauthenticate")
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = Error.CDOinfo("sendusername")
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = Error.CDOinfo("sendpassword")
-    
-    'Gmail sender update
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = Error.CDOinfo("smtpusessl")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = Error.CDOinfo("smtpconnectiontimeout")
-    .Update
-End With
-
 50
    EmailTo = "anko@zwervers.org"
-   'EmailFrom = "noreply@zwervers.org <noreply@zwervers.org>"
-   EmailFrom = "webbeheerder@zwervers.org"
+   EmailFrom = "noreply@zwervers.org <noreply@zwervers.org>"
 51
    EmailSubject = "Probleem in: " & ThisWorkbook.Name & " > " & FunctionName
 52
@@ -232,40 +232,19 @@ End With
    If Dir(LogFile) = "" Then LogFile = ""
 
 70
-With iMsg
-    Set .Configuration = iConf
-    .To = EmailTo
-    .CC = EmailCopy
-    .BCC = EmailBCC
-    .From = EmailFrom
-    .Subject = EmailSubject
-    .HTMLBody = BodyText
-    .AddAttachment LogFile
-    .Send
-End With
+Error.SendCDOmail eTo:=EmailTo, eFrom:=EmailFrom, eSubject:=EmailSubject, eBody:=BodyText, eAttach:=LogFile
 
 '------------
 71 'Check if the problem is mentioned for the first time -> place the error in the bug tracking list
 If Counter = 1 Then
     EmailTo = "x+27677550197938@mail.asana.com; anko@zwervers.org"
-    'EmailFrom = "anko@zwervers.org <anko@zwervers.org>"
-    EmailFrom = "webbeheerder@zwervers.org"
+    EmailFrom = "anko@zwervers.org <anko@zwervers.org>"
     EmailSubject = "v" & versie & " > " & FunctionName
     
     BodyText = "<p>Probleem beschrijving: </b>" & "</p><p><b>" _
                     & Problem & "</b></p>"
 
-    With iMsg
-        Set .Configuration = iConf
-        .To = EmailTo
-        .CC = ""
-        .BCC = ""
-        .From = EmailFrom
-        .Subject = EmailSubject
-        .HTMLBody = BodyText
-        .AddAttachment LogFile
-        .Send
-    End With
+    Error.SendCDOmail eTo:=EmailTo, eFrom:=EmailFrom, eSubject:=EmailSubject, eBody:=BodyText, eAttach:=LogFile
     
     DebugTekst "Asana email send", SubName
 End If
@@ -284,6 +263,7 @@ Function DebugTekst(Tekst As String, Optional ByVal FunctionName As String, Opti
 
 Dim s As String
 Dim n As Integer
+On Error Resume Next
 
 ErrorLog = Error.LogFileName
 
@@ -314,59 +294,24 @@ application.DisplayAlerts = View("Alrt")
 Error.DebugTekst Tekst:="Start", FunctionName:=SubName
 '--------Start Function
 
-Dim iMsg As Object
-Dim iConf As Object
-
-40
-Set iMsg = CreateObject("CDO.Message")
-Set iConf = CreateObject("CDO.Configuration")
-
-Dim objBP As Object
-
-iConf.Load -1    ' CDO Source Defaults
-Set Flds = iConf.Fields
-With Flds
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = Error.CDOinfo("sendusing")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = Error.CDOinfo("smtpserver")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = Error.CDOinfo("smtpserverport")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = Error.CDOinfo("smtpauthenticate")
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = Error.CDOinfo("sendusername")
-    .Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = Error.CDOinfo("sendpassword")
-    
-    'Gmail sender update
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = Error.CDOinfo("smtpusessl")
-    .Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = Error.CDOinfo("smtpconnectiontimeout")
-
-    .Update
-End With
+Dim EmailTo, EmailFrom, EmailSubject, BodyText, LogFile As String
 
 50
    EmailTo = "anko@zwervers.org"
-   'EmailFrom = "noreply@zwervers.org <noreply@zwervers.org>"
-   EmailFrom = "webbeheerder@zwervers.org"
+   EmailFrom = "noreply@zwervers.org <noreply@zwervers.org>"
 51
    EmailSubject = "Error log van: " & ThisWorkbook.Name & " > " & FunctionName
 52
-   BodyText = "<font size=10px color=#FF0000>Logbestand van: <b>" & ThisWorkbook.Name & "</b></font></p>"
+   BodyText = "<font size=10px color=#FF0000>Logbestand van: <b><br>" & ThisWorkbook.Name & "</b></font></p>"
    
 53
-
    LogFile = LogFileName()
 54
    If Dir(LogFile) = "" Then LogFile = ""
 
 70
-With iMsg
-    Set .Configuration = iConf
-    .To = EmailTo
-    .CC = EmailCopy
-    .BCC = EmailBCC
-    .From = EmailFrom
-    .Subject = EmailSubject
-    .HTMLBody = BodyText
-    .AddAttachment LogFile
-    .Send
-End With
+Error.SendCDOmail eTo:=EmailTo, eFrom:=EmailFrom, eSubject:=EmailSubject, eBody:=BodyText, _
+                    eAttach:=LogFile
 
 '--------End Function
 Error.DebugTekst Tekst:="Finish", FunctionName:=SubName
